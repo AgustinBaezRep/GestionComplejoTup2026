@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="GestionComplejo.Application/GestionComplejo.Application.csproj" />
+  <Project Path="GestionComplejo.Domain/GestionComplejo.Domain.csproj" />
+  <Project Path="GestionComplejo.Presentation/GestionComplejo.Presentation.csproj" />
+</Solution>
