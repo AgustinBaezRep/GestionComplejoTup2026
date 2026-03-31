@@ -1,4 +1,5 @@
 ﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Domain.Entities;
@@ -61,13 +62,7 @@ namespace GestionComplejo.Application.Services
             return _canchas
                 .Where(x => x.IsDeleted == false)
                 .OrderBy(x => x.Capacidad)
-                .Select(x => new CanchaResponse
-                {
-                    Id = x.Id,
-                    Nombre = x.Nombre,
-                    Deporte = x.Deporte,
-                    Precio = x.Precio
-                })
+                .Select(x => x.ToCanchaResponse())
                 .ToList();
         }
 
@@ -75,48 +70,45 @@ namespace GestionComplejo.Application.Services
         {
             return _canchas
                 .Where(x => x.IsDeleted == false && x.Id == id)
-                .Select(x => new CanchaResponse
-                {
-                    Id = x.Id,
-                    Nombre = x.Nombre,
-                    Deporte = x.Deporte,
-                    Precio = x.Precio
-                })
+                .Select(x => x.ToCanchaResponse())
                 .FirstOrDefault();
         }
 
         public CanchaResponse Create(CanchaRequest cancha)
         {
-            var newCancha = new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = cancha.Nombre,
-                Deporte = cancha.Deporte,
-                Capacidad = cancha.Capacidad,
-                Precio = cancha.Precio,
-                IsDeleted = false
-            };
+            var newCancha = cancha.ToCancha();
 
             _canchas.Add(newCancha);
 
-            return new CanchaResponse
-            {
-                Id = newCancha.Id,
-                Nombre = newCancha.Nombre,
-                Precio = newCancha.Precio,
-                Deporte = newCancha.Deporte
-            };
+            return newCancha.ToCanchaResponse();
         }
 
         public bool Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var canchaToDelete = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+
+            if (canchaToDelete == null)
+                return false;
+
+            canchaToDelete.IsDeleted = true;
+
+            return true;
         }
 
 
-        public Cancha Update(Cancha cancha)
+        public bool Update(CanchaRequest cancha, Guid id)
         {
-            throw new NotImplementedException();
+            var canchaToUpdate = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+
+            if (canchaToUpdate == null) 
+                return false;
+            
+            canchaToUpdate.Nombre = cancha.Nombre;
+            canchaToUpdate.Deporte = cancha.Deporte;
+            canchaToUpdate.Capacidad = cancha.Capacidad;
+            canchaToUpdate.Precio = cancha.Precio;
+
+            return true;
         }
     }
 }

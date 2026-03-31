@@ -10,7 +10,7 @@ namespace GestionComplejo.Application.Abstractions
         List<CanchaResponse> GetAll();
         CanchaResponse? GetById(Guid id);
         CanchaResponse Create(CanchaRequest cancha);
-        Cancha Update(Cancha cancha);
+        bool Update(CanchaRequest cancha, Guid id);
         bool Delete(Guid id);
     }
 }
