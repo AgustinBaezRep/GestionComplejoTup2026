@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6e7812f0-3fee-41f3-8239-16073aa7943b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GestionComplejo.Application\GestionComplejo.Application.csproj" />
+    <ProjectReference Include="..\GestionComplejo.Infrastructure\GestionComplejo.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
