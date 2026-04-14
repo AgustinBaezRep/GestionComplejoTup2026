@@ -6,7 +6,6 @@ namespace GestionComplejo.Infrastructure.Repositories
 {
     public class CanchaRepository : GenericRepository<Cancha>, ICanchaRepository
     {
-        // Mock list migrated from CanchaService for testing without DB migrations
         private static readonly List<Cancha> _canchas = new()
         {
             new Cancha
