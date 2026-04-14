@@ -1,4 +1,4 @@
-﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Application.Services;

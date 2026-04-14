@@ -1,65 +1,26 @@
-﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Domain.Entities;
+using GestionComplejo.Domain.Interfaces;
 
 namespace GestionComplejo.Application.Services
 {
     public class CanchaService : ICanchaService
     {
-        private static readonly List<Cancha> _canchas = new()
+        private readonly ICanchaRepository _canchaRepository;
+
+        public CanchaService(ICanchaRepository canchaRepository)
         {
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 1",
-                Deporte = "Fútbol 5",
-                Capacidad = 10,
-                Precio = 40000.0,
-                IsDeleted = false
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 2",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = false
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 3",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = true
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 4",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = true
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 5",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = false
-            }
-        };
+            _canchaRepository = canchaRepository;
+        }
 
         public List<CanchaResponse> GetAll()
         {
-            return _canchas
+            var canchas = _canchaRepository.GetAll();
+
+            return canchas
                 .Where(x => x.IsDeleted == false)
                 .OrderBy(x => x.Capacidad)
                 .Select(x => x.ToCanchaResponse())
@@ -68,45 +29,49 @@ namespace GestionComplejo.Application.Services
 
         public CanchaResponse? GetById(Guid id)
         {
-            return _canchas
-                .Where(x => x.IsDeleted == false && x.Id == id)
-                .Select(x => x.ToCanchaResponse())
-                .FirstOrDefault();
+            var cancha = _canchaRepository.GetById(id);
+
+            if (cancha == null || cancha.IsDeleted) 
+                return null;
+
+            return cancha.ToCanchaResponse();
         }
 
         public CanchaResponse Create(CanchaRequest cancha)
         {
             var newCancha = cancha.ToCancha();
 
-            _canchas.Add(newCancha);
+            _canchaRepository.Add(newCancha);
 
             return newCancha.ToCanchaResponse();
         }
 
         public bool Delete(Guid id)
         {
-            var canchaToDelete = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+            var canchaToDelete = _canchaRepository.GetById(id);
 
-            if (canchaToDelete == null)
+            if (canchaToDelete == null || canchaToDelete.IsDeleted)
                 return false;
 
             canchaToDelete.IsDeleted = true;
+            _canchaRepository.Update(canchaToDelete);
 
             return true;
         }
 
-
         public bool Update(CanchaRequest cancha, Guid id)
         {
-            var canchaToUpdate = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+            var canchaToUpdate = _canchaRepository.GetById(id);
 
-            if (canchaToUpdate == null) 
+            if (canchaToUpdate == null || canchaToUpdate.IsDeleted) 
                 return false;
             
             canchaToUpdate.Nombre = cancha.Nombre;
             canchaToUpdate.Deporte = cancha.Deporte;
             canchaToUpdate.Capacidad = cancha.Capacidad;
             canchaToUpdate.Precio = cancha.Precio;
+
+            _canchaRepository.Update(canchaToUpdate);
 
             return true;
         }

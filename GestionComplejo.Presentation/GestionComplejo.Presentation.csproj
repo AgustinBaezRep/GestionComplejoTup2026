@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GestionComplejo.Application\GestionComplejo.Application.csproj" />
+    <ProjectReference Include="..\GestionComplejo.Infrastructure\GestionComplejo.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
