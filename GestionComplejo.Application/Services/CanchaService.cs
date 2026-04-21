@@ -1,4 +1,5 @@
 ﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
@@ -8,6 +9,13 @@ namespace GestionComplejo.Application.Services
 {
     public class CanchaService : ICanchaService
     {
+        private readonly ICanchaRepository _canchaRepository;
+
+        public CanchaService(ICanchaRepository canchaRepository)
+        {
+            _canchaRepository = canchaRepository;
+        }
+
         private static readonly List<Cancha> _canchas = new()
         {
             new Cancha
@@ -59,6 +67,8 @@ namespace GestionComplejo.Application.Services
 
         public List<CanchaResponse> GetAll()
         {
+            var canchas = _canchaRepository.GetAll();
+
             return _canchas
                 .Where(x => x.IsDeleted == false)
                 .OrderBy(x => x.Capacidad)

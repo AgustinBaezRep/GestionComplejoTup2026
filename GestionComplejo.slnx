@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="GestionComplejo.Application/GestionComplejo.Application.csproj" />
   <Project Path="GestionComplejo.Domain/GestionComplejo.Domain.csproj" />
+  <Project Path="GestionComplejo.Infrastructure/GestionComplejo.Infrastructure.csproj" Id="41532878-01a6-4aab-99e9-75f3396b4468" />
   <Project Path="GestionComplejo.Presentation/GestionComplejo.Presentation.csproj" />
 </Solution>
