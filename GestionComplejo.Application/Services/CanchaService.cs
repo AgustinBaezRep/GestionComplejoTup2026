@@ -16,61 +16,10 @@ namespace GestionComplejo.Application.Services
             _canchaRepository = canchaRepository;
         }
 
-        private static readonly List<Cancha> _canchas = new()
-        {
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 1",
-                Deporte = "Fútbol 5",
-                Capacidad = 10,
-                Precio = 40000.0,
-                IsDeleted = false
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 2",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = false
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 3",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = true
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 4",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = true
-            },
-            new Cancha
-            {
-                Id = Guid.NewGuid(),
-                Nombre = "Cancha 5",
-                Deporte = "Fútbol 7",
-                Capacidad = 14,
-                Precio = 800000.0,
-                IsDeleted = false
-            }
-        };
-
         public List<CanchaResponse> GetAll()
         {
-            var canchas = _canchaRepository.GetAll();
-
-            return _canchas
-                .Where(x => x.IsDeleted == false)
+            return _canchaRepository
+                .GetAll()
                 .OrderBy(x => x.Capacidad)
                 .Select(x => x.ToCanchaResponse())
                 .ToList();
@@ -78,29 +27,21 @@ namespace GestionComplejo.Application.Services
 
         public CanchaResponse? GetById(Guid id)
         {
-            return _canchas
-                .Where(x => x.IsDeleted == false && x.Id == id)
-                .Select(x => x.ToCanchaResponse())
-                .FirstOrDefault();
+            return _canchaRepository.GetById(id)?.ToCanchaResponse();
         }
 
         public CanchaResponse Create(CanchaRequest cancha)
         {
             var newCancha = cancha.ToCancha();
 
-            _canchas.Add(newCancha);
+            _canchaRepository.Add(newCancha);
 
             return newCancha.ToCanchaResponse();
         }
 
         public bool Delete(Guid id)
         {
-            var canchaToDelete = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
-
-            if (canchaToDelete == null)
-                return false;
-
-            canchaToDelete.IsDeleted = true;
+            _canchaRepository.Delete(id);
 
             return true;
         }
@@ -108,7 +49,7 @@ namespace GestionComplejo.Application.Services
 
         public bool Update(CanchaRequest cancha, Guid id)
         {
-            var canchaToUpdate = _canchas.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+            var canchaToUpdate = _canchaRepository.GetById(id);
 
             if (canchaToUpdate == null) 
                 return false;
@@ -117,6 +58,8 @@ namespace GestionComplejo.Application.Services
             canchaToUpdate.Deporte = cancha.Deporte;
             canchaToUpdate.Capacidad = cancha.Capacidad;
             canchaToUpdate.Precio = cancha.Precio;
+
+            _canchaRepository.Update(canchaToUpdate);
 
             return true;
         }

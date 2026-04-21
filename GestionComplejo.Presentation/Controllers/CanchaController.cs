@@ -21,7 +21,12 @@ namespace GestionComplejo.Presentation.Controllers
         [HttpGet]
         public ActionResult<CanchaResponse> GetAll()
         {
-            return Ok(_canchaService.GetAll());
+            var canchas = _canchaService.GetAll();
+
+            if (!canchas.Any())
+                return NotFound();
+
+            return Ok(canchas);
         }
 
         [HttpGet("{id}")]
