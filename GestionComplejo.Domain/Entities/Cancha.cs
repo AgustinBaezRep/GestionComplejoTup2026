@@ -7,5 +7,8 @@
         public int Capacidad { get; set; }
         public string Piso { get; set; } = string.Empty;
         public double Precio { get; set; }
+
+        public Vestuario? Vestuario { get; set; }
+        public ICollection<Servicio> Servicios { get; set; } = new List<Servicio>();
     }
 }

@@ -18,9 +18,13 @@ builder.Services.AddDbContext<GestionComplejoDbContext>(
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped<ICanchaRepository, CanchaRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
+builder.Services.AddScoped<IVestuarioRepository, VestuarioRepository>();
+builder.Services.AddScoped<IServicioRepository, ServicioRepository>();
 
 builder.Services.AddScoped<ICanchaService, CanchaService>();
 builder.Services.AddScoped<IReservaService, ReservaService>();
+builder.Services.AddScoped<IVestuarioService, VestuarioService>();
+builder.Services.AddScoped<IServicioService, ServicioService>();
 
 var app = builder.Build();
 
