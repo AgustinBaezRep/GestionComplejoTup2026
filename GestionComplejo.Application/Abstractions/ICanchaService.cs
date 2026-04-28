@@ -1,7 +1,5 @@
 ﻿using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
-using GestionComplejo.Application.Services;
-using GestionComplejo.Domain.Entities;
 
 namespace GestionComplejo.Application.Abstractions
 {
@@ -12,5 +10,7 @@ namespace GestionComplejo.Application.Abstractions
         CanchaResponse Create(CanchaRequest cancha);
         bool Update(CanchaRequest cancha, Guid id);
         bool Delete(Guid id);
+        CanchaResponse? AsociarServicios(Guid canchaId, List<Guid> servicioIds);
+        CanchaResponse? AsociarVestuario(Guid canchaId, Guid vestuarioId);
     }
 }

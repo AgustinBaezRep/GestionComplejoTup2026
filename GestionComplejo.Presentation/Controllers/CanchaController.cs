@@ -1,8 +1,6 @@
 ﻿using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
-using GestionComplejo.Application.Services;
-using GestionComplejo.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionComplejo.Presentation.Controllers
@@ -68,6 +66,28 @@ namespace GestionComplejo.Presentation.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpPost("{id}/servicios")]
+        public ActionResult<CanchaResponse> AsociarServicios([FromRoute] Guid id, [FromBody] AsociarServiciosRequest request)
+        {
+            var cancha = _canchaService.AsociarServicios(id, request.ServicioIds);
+
+            if (cancha == null)
+                return NotFound();
+
+            return Ok(cancha);
+        }
+
+        [HttpPost("{id}/vestuario/{vestuarioId}")]
+        public ActionResult<CanchaResponse> AsociarVestuario([FromRoute] Guid id, [FromRoute] Guid vestuarioId)
+        {
+            var cancha = _canchaService.AsociarVestuario(id, vestuarioId);
+
+            if (cancha == null)
+                return NotFound();
+
+            return Ok(cancha);
         }
     }
 }

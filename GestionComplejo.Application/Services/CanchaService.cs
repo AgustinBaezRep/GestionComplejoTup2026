@@ -51,9 +51,9 @@ namespace GestionComplejo.Application.Services
         {
             var canchaToUpdate = _canchaRepository.GetById(id);
 
-            if (canchaToUpdate == null) 
+            if (canchaToUpdate == null)
                 return false;
-            
+
             canchaToUpdate.Nombre = cancha.Nombre;
             canchaToUpdate.Deporte = cancha.Deporte;
             canchaToUpdate.Capacidad = cancha.Capacidad;
@@ -62,6 +62,18 @@ namespace GestionComplejo.Application.Services
             _canchaRepository.Update(canchaToUpdate);
 
             return true;
+        }
+
+        public CanchaResponse? AsociarServicios(Guid canchaId, List<Guid> servicioIds)
+        {
+            var cancha = _canchaRepository.AsociarServicios(canchaId, servicioIds);
+            return cancha?.ToCanchaResponse();
+        }
+
+        public CanchaResponse? AsociarVestuario(Guid canchaId, Guid vestuarioId)
+        {
+            var cancha = _canchaRepository.AsociarVestuario(canchaId, vestuarioId);
+            return cancha?.ToCanchaResponse();
         }
     }
 }

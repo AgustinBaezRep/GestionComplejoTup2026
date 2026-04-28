@@ -4,5 +4,6 @@
       "Bash(dotnet build *)",
       "Bash(dotnet ef *)"
     ]
-  }
+  },
+  "prefersReducedMotion": false
 }

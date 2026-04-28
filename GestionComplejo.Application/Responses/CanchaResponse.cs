@@ -6,5 +6,7 @@
         public string Nombre { get; set; } = string.Empty;
         public string Deporte { get; set; } = string.Empty;
         public double Precio { get; set; }
+        public List<ServicioResponse> Servicios { get; set; } = new();
+        public VestuarioResponse? Vestuario { get; set; }
     }
 }

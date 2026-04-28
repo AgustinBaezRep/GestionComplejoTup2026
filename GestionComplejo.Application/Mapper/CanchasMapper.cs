@@ -13,7 +13,11 @@ namespace GestionComplejo.Application.Mapper
                 Id = cancha.Id,
                 Nombre = cancha.Nombre,
                 Deporte = cancha.Deporte,
-                Precio = cancha.Precio
+                Precio = cancha.Precio,
+                Servicios = cancha.Servicios?.Select(s => s.ToServicioResponse()).ToList() ?? new(),
+                Vestuario = cancha.Vestuario != null && !cancha.Vestuario.IsDeleted
+                    ? cancha.Vestuario.ToVestuarioResponse()
+                    : null
             };
         }
 
