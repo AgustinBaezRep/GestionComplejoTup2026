@@ -1,6 +1,7 @@
 using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
+using GestionComplejo.Presentation.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace GestionComplejo.Presentation.Controllers
             _reservaService = reservaService;
         }
 
+        [Authorize(Policy = Policies.SoloCliente)]
         [HttpPost]
         public ActionResult<ReservaResponse> Create([FromBody] ReservaRequest request)
         {

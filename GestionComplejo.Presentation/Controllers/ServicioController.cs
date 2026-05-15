@@ -1,6 +1,7 @@
 using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
+using GestionComplejo.Presentation.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,7 @@ namespace GestionComplejo.Presentation.Controllers
             return Ok(servicio);
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
         public ActionResult<ServicioResponse> Create([FromBody] ServicioRequest request)
         {
@@ -47,6 +49,7 @@ namespace GestionComplejo.Presentation.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] ServicioRequest request, [FromRoute] Guid id)
         {
@@ -58,6 +61,7 @@ namespace GestionComplejo.Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] Guid id)
         {
