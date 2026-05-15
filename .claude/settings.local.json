@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(dotnet build *)",
-      "Bash(dotnet ef *)"
+      "Bash(dotnet ef *)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Tup\\\\Programacion IV - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(dotnet add *)",
+      "Bash(dotnet remove *)",
+      "Bash(dotnet restore *)",
+      "Read(//c/Users/agust/.nuget/packages/microsoft.openapi/2.4.1/**)",
+      "Bash(powershell -Command \"Add-Type -Path 'lib\\\\net8.0\\\\Microsoft.OpenApi.dll'; [System.Reflection.Assembly]::LoadFrom\\(\\(Resolve-Path 'lib\\\\net8.0\\\\Microsoft.OpenApi.dll'\\).Path\\).GetTypes\\(\\) | Select-Object -ExpandProperty Namespace | Sort-Object -Unique\")"
     ]
   },
   "prefersReducedMotion": false
