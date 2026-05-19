@@ -1,4 +1,5 @@
 ﻿using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
             entity.UpdatedDateTime = DateTime.UtcNow;
 
             _dbSet.Add(entity);
-            _context.SaveChanges();
+            SaveChanges();
             return entity;
         }
 
@@ -39,7 +40,7 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
             entity.UpdatedDateTime = DateTime.UtcNow;
 
             _dbSet.Update(entity);
-            _context.SaveChanges();
+            SaveChanges();
         }
 
         public virtual void Delete(Guid id)
@@ -52,7 +53,19 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
                 entity.UpdatedDateTime = DateTime.UtcNow;
 
                 _dbSet.Update(entity);
+                SaveChanges();
+            }
+        }
+
+        protected void SaveChanges()
+        {
+            try
+            {
                 _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("Error al acceder a la base de datos.", ex);
             }
         }
     }

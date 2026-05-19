@@ -1,4 +1,5 @@
-﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Presentation.Authorization;
@@ -20,82 +21,127 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult<CanchaResponse> GetAll()
+        public ActionResult<List<CanchaResponse>> GetAll()
         {
-            var canchas = _canchaService.GetAll();
+            try
+            {
+                var canchas = _canchaService.GetAll();
 
-            if (!canchas.Any())
-                return NotFound();
+                if (!canchas.Any())
+                    return NotFound("No hay canchas registradas.");
 
-            return Ok(canchas);
+                return Ok(canchas);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult<CanchaResponse> GetById([FromRoute] Guid id)
         {
-            var cancha = _canchaService.GetById(id);
-
-            if (cancha == null)
-                return NotFound();
-
-            return Ok(cancha);
+            try
+            {
+                return Ok(_canchaService.GetById(id));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
         public ActionResult<CanchaResponse> Create([FromBody] CanchaRequest cancha)
         {
-            var createdCancha = _canchaService.Create(cancha);
-
-            return CreatedAtAction(nameof(GetById), new { id = createdCancha.Id }, createdCancha);
+            try
+            {
+                var createdCancha = _canchaService.Create(cancha);
+                return CreatedAtAction(nameof(GetById), new { id = createdCancha.Id }, createdCancha);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] Guid id)
         {
-            var createdCancha = _canchaService.Delete(id);
-
-            if (!createdCancha)
-                return NotFound();
-
-            return NoContent();
+            try
+            {
+                _canchaService.Delete(id);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] CanchaRequest cancha, [FromRoute] Guid id)
         {
-            var updatedCancha = _canchaService.Update(cancha, id);
-
-            if (!updatedCancha)
-                return NotFound();
-
-            return NoContent();
+            try
+            {
+                _canchaService.Update(cancha, id);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/servicios")]
         public ActionResult<CanchaResponse> AsociarServicios([FromRoute] Guid id, [FromBody] AsociarServiciosRequest request)
         {
-            var cancha = _canchaService.AsociarServicios(id, request.ServicioIds);
-
-            if (cancha == null)
-                return NotFound();
-
-            return Ok(cancha);
+            try
+            {
+                return Ok(_canchaService.AsociarServicios(id, request.ServicioIds));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/vestuario/{vestuarioId}")]
         public ActionResult<CanchaResponse> AsociarVestuario([FromRoute] Guid id, [FromRoute] Guid vestuarioId)
         {
-            var cancha = _canchaService.AsociarVestuario(id, vestuarioId);
-
-            if (cancha == null)
-                return NotFound();
-
-            return Ok(cancha);
+            try
+            {
+                return Ok(_canchaService.AsociarVestuario(id, vestuarioId));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

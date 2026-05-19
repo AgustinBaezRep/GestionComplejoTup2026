@@ -1,5 +1,6 @@
-﻿using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
@@ -25,34 +26,39 @@ namespace GestionComplejo.Application.Services
                 .ToList();
         }
 
-        public CanchaResponse? GetById(Guid id)
+        public CanchaResponse GetById(Guid id)
         {
-            return _canchaRepository.GetById(id)?.ToCanchaResponse();
+            var cancha = _canchaRepository.GetById(id);
+
+            if (cancha == null)
+                throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
+
+            return cancha.ToCanchaResponse();
         }
 
         public CanchaResponse Create(CanchaRequest cancha)
         {
             var newCancha = cancha.ToCancha();
-
             _canchaRepository.Add(newCancha);
-
             return newCancha.ToCanchaResponse();
         }
 
-        public bool Delete(Guid id)
+        public void Delete(Guid id)
         {
-            _canchaRepository.Delete(id);
+            var cancha = _canchaRepository.GetById(id);
 
-            return true;
+            if (cancha == null)
+                throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
+
+            _canchaRepository.Delete(id);
         }
 
-
-        public bool Update(CanchaRequest cancha, Guid id)
+        public void Update(CanchaRequest cancha, Guid id)
         {
             var canchaToUpdate = _canchaRepository.GetById(id);
 
             if (canchaToUpdate == null)
-                return false;
+                throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
 
             canchaToUpdate.Nombre = cancha.Nombre;
             canchaToUpdate.Deporte = cancha.Deporte;
@@ -60,20 +66,26 @@ namespace GestionComplejo.Application.Services
             canchaToUpdate.Precio = cancha.Precio;
 
             _canchaRepository.Update(canchaToUpdate);
-
-            return true;
         }
 
-        public CanchaResponse? AsociarServicios(Guid canchaId, List<Guid> servicioIds)
+        public CanchaResponse AsociarServicios(Guid canchaId, List<Guid> servicioIds)
         {
             var cancha = _canchaRepository.AsociarServicios(canchaId, servicioIds);
-            return cancha?.ToCanchaResponse();
+
+            if (cancha == null)
+                throw new NotFoundException($"No se encontró una cancha con id '{canchaId}'.");
+
+            return cancha.ToCanchaResponse();
         }
 
-        public CanchaResponse? AsociarVestuario(Guid canchaId, Guid vestuarioId)
+        public CanchaResponse AsociarVestuario(Guid canchaId, Guid vestuarioId)
         {
             var cancha = _canchaRepository.AsociarVestuario(canchaId, vestuarioId);
-            return cancha?.ToCanchaResponse();
+
+            if (cancha == null)
+                throw new NotFoundException($"No se encontró la cancha o el vestuario especificado.");
+
+            return cancha.ToCanchaResponse();
         }
     }
 }

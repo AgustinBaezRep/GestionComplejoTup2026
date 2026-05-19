@@ -5,6 +5,6 @@ namespace GestionComplejo.Application.Abstractions
 {
     public interface IReservaService
     {
-        ReservaResponse? Create(ReservaRequest request);
+        ReservaResponse Create(ReservaRequest request);
     }
 }

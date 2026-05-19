@@ -1,11 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Domain.Entities;
 using GestionComplejo.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,13 +25,16 @@ namespace GestionComplejo.Infrastructure.ExternalServices
             _configuration = configuration;
         }
 
-        public AuthResponse? SignUp(SignUpRequest request)
+        public AuthResponse SignUp(SignUpRequest request)
         {
+            if (!Regex.IsMatch(request.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                throw new ValidationException($"El email '{request.Email}' no tiene un formato válido.");
+
             bool emailEnUso = _context.Clientes.Any(c => c.Email == request.Email)
                            || _context.Admins.Any(a => a.Email == request.Email);
 
             if (emailEnUso)
-                return null;
+                throw new ConflictException($"El email '{request.Email}' ya está registrado.");
 
             string contrasenaHasheada = BCrypt.Net.BCrypt.HashPassword(request.Contrasena);
             Guid nuevoId = Guid.NewGuid();
@@ -64,7 +70,14 @@ namespace GestionComplejo.Infrastructure.ExternalServices
                 rol = "Cliente";
             }
 
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("Error al guardar el usuario en la base de datos.", ex);
+            }
 
             return new AuthResponse
             {
@@ -75,30 +88,29 @@ namespace GestionComplejo.Infrastructure.ExternalServices
             };
         }
 
-        public AuthResponse? SignIn(SignInRequest request)
+        public AuthResponse SignIn(SignInRequest request)
         {
             Guid userId;
             string rol;
-            string contrasenaHasheada;
 
             var cliente = _context.Clientes.FirstOrDefault(c => c.Email == request.Email);
             if (cliente != null)
             {
                 if (!BCrypt.Net.BCrypt.Verify(request.Contrasena, cliente.Contrasena))
-                    return null;
+                    throw new UnauthorizedException("Credenciales incorrectas.");
 
                 userId = cliente.Id;
-                contrasenaHasheada = cliente.Contrasena;
                 rol = "Cliente";
             }
             else
             {
                 var admin = _context.Admins.FirstOrDefault(a => a.Email == request.Email);
+
                 if (admin == null)
-                    return null;
+                    throw new UnauthorizedException("Credenciales incorrectas.");
 
                 if (!BCrypt.Net.BCrypt.Verify(request.Contrasena, admin.Contrasena))
-                    return null;
+                    throw new UnauthorizedException("Credenciales incorrectas.");
 
                 userId = admin.Id;
                 rol = "Admin";

@@ -1,5 +1,6 @@
 using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
@@ -23,9 +24,14 @@ namespace GestionComplejo.Application.Services
                 .ToList();
         }
 
-        public ServicioResponse? GetById(Guid id)
+        public ServicioResponse GetById(Guid id)
         {
-            return _servicioRepository.GetById(id)?.ToServicioResponse();
+            var servicio = _servicioRepository.GetById(id);
+
+            if (servicio == null)
+                throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
+
+            return servicio.ToServicioResponse();
         }
 
         public ServicioResponse Create(ServicioRequest request)
@@ -35,25 +41,28 @@ namespace GestionComplejo.Application.Services
             return newServicio.ToServicioResponse();
         }
 
-        public bool Update(ServicioRequest request, Guid id)
+        public void Update(ServicioRequest request, Guid id)
         {
             var servicio = _servicioRepository.GetById(id);
 
             if (servicio == null)
-                return false;
+                throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
 
             servicio.Nombre = request.Nombre;
             servicio.Descripcion = request.Descripcion;
             servicio.CostoAdicional = request.CostoAdicional;
 
             _servicioRepository.Update(servicio);
-            return true;
         }
 
-        public bool Delete(Guid id)
+        public void Delete(Guid id)
         {
+            var servicio = _servicioRepository.GetById(id);
+
+            if (servicio == null)
+                throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
+
             _servicioRepository.Delete(id);
-            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
 using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Presentation.Authorization;
@@ -23,12 +24,23 @@ namespace GestionComplejo.Presentation.Controllers
         [HttpPost]
         public ActionResult<ReservaResponse> Create([FromBody] ReservaRequest request)
         {
-            var reserva = _reservaService.Create(request);
-
-            if (reserva == null)
-                return Conflict("La cancha ya tiene una reserva en ese horario.");
-
-            return StatusCode(StatusCodes.Status201Created, reserva);
+            try
+            {
+                var reserva = _reservaService.Create(request);
+                return StatusCode(StatusCodes.Status201Created, reserva);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ConflictException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }

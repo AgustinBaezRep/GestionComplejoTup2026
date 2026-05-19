@@ -5,7 +5,7 @@ namespace GestionComplejo.Application.Abstractions
 {
     public interface IAuthService
     {
-        AuthResponse? SignUp(SignUpRequest request);
-        AuthResponse? SignIn(SignInRequest request);
+        AuthResponse SignUp(SignUpRequest request);
+        AuthResponse SignIn(SignInRequest request);
     }
 }

@@ -1,5 +1,6 @@
 using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Mapper;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
@@ -23,9 +24,14 @@ namespace GestionComplejo.Application.Services
                 .ToList();
         }
 
-        public VestuarioResponse? GetById(Guid id)
+        public VestuarioResponse GetById(Guid id)
         {
-            return _vestuarioRepository.GetById(id)?.ToVestuarioResponse();
+            var vestuario = _vestuarioRepository.GetById(id);
+
+            if (vestuario == null)
+                throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
+
+            return vestuario.ToVestuarioResponse();
         }
 
         public VestuarioResponse Create(VestuarioRequest request)
@@ -35,12 +41,12 @@ namespace GestionComplejo.Application.Services
             return newVestuario.ToVestuarioResponse();
         }
 
-        public bool Update(VestuarioRequest request, Guid id)
+        public void Update(VestuarioRequest request, Guid id)
         {
             var vestuario = _vestuarioRepository.GetById(id);
 
             if (vestuario == null)
-                return false;
+                throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
 
             vestuario.NumeroVestuarios = request.NumeroVestuarios;
             vestuario.TieneDuchas = request.TieneDuchas;
@@ -48,13 +54,16 @@ namespace GestionComplejo.Application.Services
             vestuario.CanchaId = request.CanchaId;
 
             _vestuarioRepository.Update(vestuario);
-            return true;
         }
 
-        public bool Delete(Guid id)
+        public void Delete(Guid id)
         {
+            var vestuario = _vestuarioRepository.GetById(id);
+
+            if (vestuario == null)
+                throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
+
             _vestuarioRepository.Delete(id);
-            return true;
         }
     }
 }
