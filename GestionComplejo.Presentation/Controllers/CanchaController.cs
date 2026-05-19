@@ -1,6 +1,7 @@
 ﻿using GestionComplejo.Application.Abstractions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
+using GestionComplejo.Presentation.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +41,7 @@ namespace GestionComplejo.Presentation.Controllers
             return Ok(cancha);
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
         public ActionResult<CanchaResponse> Create([FromBody] CanchaRequest cancha)
         {
@@ -48,6 +50,7 @@ namespace GestionComplejo.Presentation.Controllers
             return CreatedAtAction(nameof(GetById), new { id = createdCancha.Id }, createdCancha);
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] Guid id)
         {
@@ -59,6 +62,7 @@ namespace GestionComplejo.Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] CanchaRequest cancha, [FromRoute] Guid id)
         {
@@ -70,6 +74,7 @@ namespace GestionComplejo.Presentation.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/servicios")]
         public ActionResult<CanchaResponse> AsociarServicios([FromRoute] Guid id, [FromBody] AsociarServiciosRequest request)
         {
@@ -81,6 +86,7 @@ namespace GestionComplejo.Presentation.Controllers
             return Ok(cancha);
         }
 
+        [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/vestuario/{vestuarioId}")]
         public ActionResult<CanchaResponse> AsociarVestuario([FromRoute] Guid id, [FromRoute] Guid vestuarioId)
         {

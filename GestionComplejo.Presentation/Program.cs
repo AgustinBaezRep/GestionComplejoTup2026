@@ -1,5 +1,6 @@
 using System.Text;
 using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Presentation.Authorization;
 using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Application.Services;
 using GestionComplejo.Infrastructure.ExternalServices;
@@ -47,6 +48,12 @@ builder.Services.AddScoped<IReservaService, ReservaService>();
 builder.Services.AddScoped<IVestuarioService, VestuarioService>();
 builder.Services.AddScoped<IServicioService, ServicioService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.SoloAdmin, policy => policy.RequireClaim("role", "Admin"));
+    options.AddPolicy(Policies.SoloCliente, policy => policy.RequireClaim("role", "Cliente"));
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
