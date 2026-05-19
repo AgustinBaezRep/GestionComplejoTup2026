@@ -39,6 +39,10 @@ namespace GestionComplejo.Presentation.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [HttpPost("signin")]
@@ -56,6 +60,10 @@ namespace GestionComplejo.Presentation.Controllers
             catch (DatabaseException ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
             }
         }
     }

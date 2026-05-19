@@ -36,6 +36,10 @@ namespace GestionComplejo.Presentation.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [HttpGet("{id}")]
@@ -53,6 +57,10 @@ namespace GestionComplejo.Presentation.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
@@ -67,6 +75,10 @@ namespace GestionComplejo.Presentation.Controllers
             catch (DatabaseException ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
             }
         }
 
@@ -87,6 +99,10 @@ namespace GestionComplejo.Presentation.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
@@ -105,6 +121,10 @@ namespace GestionComplejo.Presentation.Controllers
             catch (DatabaseException ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
             }
         }
     }
