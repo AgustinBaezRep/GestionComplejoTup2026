@@ -45,7 +45,7 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
                     cancha.Servicios.Add(servicio);
             }
 
-            _context.SaveChanges();
+            SaveChanges();
             return cancha;
         }
 
@@ -64,7 +64,7 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
             vestuario.CanchaId = canchaId;
             vestuario.UpdatedDateTime = DateTime.UtcNow;
 
-            _context.SaveChanges();
+            SaveChanges();
 
             return GetById(canchaId);
         }

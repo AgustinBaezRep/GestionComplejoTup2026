@@ -1,4 +1,5 @@
 using GestionComplejo.Application.Abstractions;
+using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Presentation.Authorization;
@@ -22,51 +23,109 @@ namespace GestionComplejo.Presentation.Controllers
         [HttpGet]
         public ActionResult<List<ServicioResponse>> GetAll()
         {
-            var servicios = _servicioService.GetAll();
+            try
+            {
+                var servicios = _servicioService.GetAll();
 
-            if (!servicios.Any())
-                return NotFound();
+                if (!servicios.Any())
+                    return NotFound("No hay servicios registrados.");
 
-            return Ok(servicios);
+                return Ok(servicios);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult<ServicioResponse> GetById([FromRoute] Guid id)
         {
-            var servicio = _servicioService.GetById(id);
-
-            if (servicio == null)
-                return NotFound();
-
-            return Ok(servicio);
+            try
+            {
+                return Ok(_servicioService.GetById(id));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
         public ActionResult<ServicioResponse> Create([FromBody] ServicioRequest request)
         {
-            var created = _servicioService.Create(request);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            try
+            {
+                var created = _servicioService.Create(request);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] ServicioRequest request, [FromRoute] Guid id)
         {
-            var updated = _servicioService.Update(request, id);
-
-            if (!updated)
-                return NotFound();
-
-            return NoContent();
+            try
+            {
+                _servicioService.Update(request, id);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] Guid id)
         {
-            _servicioService.Delete(id);
-            return NoContent();
+            try
+            {
+                _servicioService.Delete(id);
+                return NoContent();
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Ocurrió un error inesperado.");
+            }
         }
     }
 }

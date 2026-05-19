@@ -6,9 +6,9 @@ namespace GestionComplejo.Application.Abstractions
     public interface IServicioService
     {
         List<ServicioResponse> GetAll();
-        ServicioResponse? GetById(Guid id);
+        ServicioResponse GetById(Guid id);
         ServicioResponse Create(ServicioRequest request);
-        bool Update(ServicioRequest request, Guid id);
-        bool Delete(Guid id);
+        void Update(ServicioRequest request, Guid id);
+        void Delete(Guid id);
     }
 }
