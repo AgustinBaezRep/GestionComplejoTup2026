@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GestionComplejo.Presentation.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReservaController : ControllerBase
@@ -20,13 +20,13 @@ namespace GestionComplejo.Presentation.Controllers
             _reservaService = reservaService;
         }
 
-        [Authorize(Policy = Policies.SoloCliente)]
+        //[Authorize(Policy = Policies.SoloCliente)]
         [HttpPost]
-        public ActionResult<ReservaResponse> Create([FromBody] ReservaRequest request)
+        public async Task<ActionResult<ReservaResponse>> CreateAsync([FromBody] ReservaRequest request)
         {
             try
             {
-                var reserva = _reservaService.Create(request);
+                var reserva = await _reservaService.CreateAsync(request);
                 return StatusCode(StatusCodes.Status201Created, reserva);
             }
             catch (NotFoundException ex)
