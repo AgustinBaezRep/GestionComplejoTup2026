@@ -1,15 +1,16 @@
-using System.Text;
 using GestionComplejo.Application.Abstractions;
-using GestionComplejo.Presentation.Authorization;
 using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Application.Services;
 using GestionComplejo.Infrastructure.ExternalServices;
 using GestionComplejo.Infrastructure.Persistance;
 using GestionComplejo.Infrastructure.Persistance.Repository;
+using GestionComplejo.Presentation.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,11 @@ builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IVestuarioRepository, VestuarioRepository>();
 builder.Services.AddScoped<IServicioRepository, ServicioRepository>();
 
+builder.Services.AddHttpClient<IClimaService, ClimaService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Clima:BaseUrl"]!);
+});
+
 builder.Services.AddScoped<ICanchaService, CanchaService>();
 builder.Services.AddScoped<IReservaService, ReservaService>();
 builder.Services.AddScoped<IVestuarioService, VestuarioService>();
@@ -51,8 +57,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(Policies.SoloAdmin, policy => policy.RequireClaim("role", "Admin"));
-    options.AddPolicy(Policies.SoloCliente, policy => policy.RequireClaim("role", "Cliente"));
+    options.AddPolicy(Policies.SoloAdmin, policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+    options.AddPolicy(Policies.SoloCliente, policy => policy.RequireClaim(ClaimTypes.Role, "Cliente"));
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

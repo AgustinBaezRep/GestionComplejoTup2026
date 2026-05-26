@@ -11,19 +11,28 @@ namespace GestionComplejo.Application.Services
     {
         private readonly IReservaRepository _reservaRepository;
         private readonly ICanchaRepository _canchaRepository;
+        private readonly IClimaService _climaService;
 
-        public ReservaService(IReservaRepository reservaRepository, ICanchaRepository canchaRepository)
+        public ReservaService(
+            IReservaRepository reservaRepository,
+            ICanchaRepository canchaRepository,
+            IClimaService climaService)
         {
             _reservaRepository = reservaRepository;
             _canchaRepository = canchaRepository;
+            _climaService = climaService;
         }
 
-        public ReservaResponse Create(ReservaRequest request)
+        public async Task<ReservaResponse> CreateAsync(ReservaRequest request)
         {
             var cancha = _canchaRepository.GetById(request.CanchaId);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{request.CanchaId}'.");
+
+            var llueveEnEseHorario = await _climaService.EsLluviosoAsync(request.FechaInicio);
+            if (llueveEnEseHorario)
+                throw new ConflictException("No se puede reservar: se esperan lluvias en ese horario.");
 
             var fechaFin = request.FechaInicio.AddHours(1);
 
