@@ -5,6 +5,7 @@ using GestionComplejo.Infrastructure.ExternalServices;
 using GestionComplejo.Infrastructure.Persistance;
 using GestionComplejo.Infrastructure.Persistance.Repository;
 using GestionComplejo.Presentation.Authorization;
+using GestionComplejo.Presentation.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -85,6 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

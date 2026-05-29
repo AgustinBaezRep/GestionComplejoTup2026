@@ -1,5 +1,4 @@
 using GestionComplejo.Application.Abstractions;
-using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Application.Requests;
 using GestionComplejo.Application.Responses;
 using GestionComplejo.Presentation.Authorization;
@@ -23,109 +22,42 @@ namespace GestionComplejo.Presentation.Controllers
         [HttpGet]
         public ActionResult<List<VestuarioResponse>> GetAll()
         {
-            try
-            {
-                var vestuarios = _vestuarioService.GetAll();
+            var vestuarios = _vestuarioService.GetAll();
 
-                if (!vestuarios.Any())
-                    return NotFound("No hay vestuarios registrados.");
+            if (!vestuarios.Any())
+                return NotFound("No hay vestuarios registrados.");
 
-                return Ok(vestuarios);
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Ocurrió un error inesperado.");
-            }
+            return Ok(vestuarios);
         }
 
         [HttpGet("{id}")]
         public ActionResult<VestuarioResponse> GetById([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(_vestuarioService.GetById(id));
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Ocurrió un error inesperado.");
-            }
+            return Ok(_vestuarioService.GetById(id));
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
         public ActionResult<VestuarioResponse> Create([FromBody] VestuarioRequest request)
         {
-            try
-            {
-                var created = _vestuarioService.Create(request);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Ocurrió un error inesperado.");
-            }
+            var created = _vestuarioService.Create(request);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] VestuarioRequest request, [FromRoute] Guid id)
         {
-            try
-            {
-                _vestuarioService.Update(request, id);
-                return NoContent();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Ocurrió un error inesperado.");
-            }
+            _vestuarioService.Update(request, id);
+            return NoContent();
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] Guid id)
         {
-            try
-            {
-                _vestuarioService.Delete(id);
-                return NoContent();
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Ocurrió un error inesperado.");
-            }
+            _vestuarioService.Delete(id);
+            return NoContent();
         }
     }
 }
