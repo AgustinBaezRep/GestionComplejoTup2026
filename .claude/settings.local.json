@@ -12,7 +12,11 @@
       "Read(//c/Users/agust/.nuget/packages/microsoft.openapi/2.4.1/**)",
       "Bash(powershell -Command \"Add-Type -Path 'lib\\\\net8.0\\\\Microsoft.OpenApi.dll'; [System.Reflection.Assembly]::LoadFrom\\(\\(Resolve-Path 'lib\\\\net8.0\\\\Microsoft.OpenApi.dll'\\).Path\\).GetTypes\\(\\) | Select-Object -ExpandProperty Namespace | Sort-Object -Unique\")",
       "Bash(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Recurse -Include \"*.csproj\", \"*.sln\")",
-      "Bash(Select-Object -First 10)"
+      "Bash(Select-Object -First 10)",
+      "Bash(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Directory | Where-Object {$_.Name -match \"Test|test\" -or $_.Name -match \"Prueba|prueba\"})"
     ]
   },
   "prefersReducedMotion": false

@@ -5,10 +5,10 @@ namespace GestionComplejo.Application.Abstractions
 {
     public interface IServicioService
     {
-        List<ServicioResponse> GetAll();
-        ServicioResponse GetById(Guid id);
-        ServicioResponse Create(ServicioRequest request);
-        void Update(ServicioRequest request, Guid id);
-        void Delete(Guid id);
+        Task<List<ServicioResponse>> GetAllAsync();
+        Task<ServicioResponse> GetByIdAsync(Guid id);
+        Task<ServicioResponse> CreateAsync(ServicioRequest request);
+        Task UpdateAsync(ServicioRequest request, Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

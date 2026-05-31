@@ -16,17 +16,16 @@ namespace GestionComplejo.Application.Services
             _servicioRepository = servicioRepository;
         }
 
-        public List<ServicioResponse> GetAll()
+        public async Task<List<ServicioResponse>> GetAllAsync()
         {
-            return _servicioRepository
-                .GetAll()
+            return (await _servicioRepository.GetAllAsync())
                 .Select(x => x.ToServicioResponse())
                 .ToList();
         }
 
-        public ServicioResponse GetById(Guid id)
+        public async Task<ServicioResponse> GetByIdAsync(Guid id)
         {
-            var servicio = _servicioRepository.GetById(id);
+            var servicio = await _servicioRepository.GetByIdAsync(id);
 
             if (servicio == null)
                 throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
@@ -34,16 +33,16 @@ namespace GestionComplejo.Application.Services
             return servicio.ToServicioResponse();
         }
 
-        public ServicioResponse Create(ServicioRequest request)
+        public async Task<ServicioResponse> CreateAsync(ServicioRequest request)
         {
             var newServicio = request.ToServicio();
-            _servicioRepository.Add(newServicio);
+            await _servicioRepository.AddAsync(newServicio);
             return newServicio.ToServicioResponse();
         }
 
-        public void Update(ServicioRequest request, Guid id)
+        public async Task UpdateAsync(ServicioRequest request, Guid id)
         {
-            var servicio = _servicioRepository.GetById(id);
+            var servicio = await _servicioRepository.GetByIdAsync(id);
 
             if (servicio == null)
                 throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
@@ -52,17 +51,17 @@ namespace GestionComplejo.Application.Services
             servicio.Descripcion = request.Descripcion;
             servicio.CostoAdicional = request.CostoAdicional;
 
-            _servicioRepository.Update(servicio);
+            await _servicioRepository.UpdateAsync(servicio);
         }
 
-        public void Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            var servicio = _servicioRepository.GetById(id);
+            var servicio = await _servicioRepository.GetByIdAsync(id);
 
             if (servicio == null)
                 throw new NotFoundException($"No se encontró un servicio con id '{id}'.");
 
-            _servicioRepository.Delete(id);
+            await _servicioRepository.DeleteAsync(id);
         }
     }
 }

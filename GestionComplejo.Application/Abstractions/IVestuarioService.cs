@@ -5,10 +5,10 @@ namespace GestionComplejo.Application.Abstractions
 {
     public interface IVestuarioService
     {
-        List<VestuarioResponse> GetAll();
-        VestuarioResponse GetById(Guid id);
-        VestuarioResponse Create(VestuarioRequest request);
-        void Update(VestuarioRequest request, Guid id);
-        void Delete(Guid id);
+        Task<List<VestuarioResponse>> GetAllAsync();
+        Task<VestuarioResponse> GetByIdAsync(Guid id);
+        Task<VestuarioResponse> CreateAsync(VestuarioRequest request);
+        Task UpdateAsync(VestuarioRequest request, Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

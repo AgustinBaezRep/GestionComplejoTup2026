@@ -25,7 +25,7 @@ namespace GestionComplejo.Application.Services
 
         public async Task<ReservaResponse> CreateAsync(ReservaRequest request)
         {
-            var cancha = _canchaRepository.GetById(request.CanchaId);
+            var cancha = await _canchaRepository.GetByIdAsync(request.CanchaId);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{request.CanchaId}'.");
@@ -36,11 +36,11 @@ namespace GestionComplejo.Application.Services
 
             var fechaFin = request.FechaInicio.AddHours(1);
 
-            if (_reservaRepository.ExisteReservaEnHorario(request.CanchaId, request.FechaInicio, fechaFin))
+            if (await _reservaRepository.ExisteReservaEnHorarioAsync(request.CanchaId, request.FechaInicio, fechaFin))
                 throw new ConflictException("La cancha ya tiene una reserva en ese horario.");
 
             var reserva = request.ToReserva(fechaFin, cancha.Precio);
-            _reservaRepository.Add(reserva);
+            await _reservaRepository.AddAsync(reserva);
 
             return reserva.ToReservaResponse();
         }

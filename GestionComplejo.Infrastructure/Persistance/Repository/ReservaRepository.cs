@@ -1,5 +1,6 @@
 using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestionComplejo.Infrastructure.Persistance.Repository
 {
@@ -9,9 +10,9 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
         {
         }
 
-        public bool ExisteReservaEnHorario(Guid canchaId, DateTime inicio, DateTime fin)
+        public async Task<bool> ExisteReservaEnHorarioAsync(Guid canchaId, DateTime inicio, DateTime fin)
         {
-            return _dbSet.Any(r =>
+            return await _dbSet.AnyAsync(r =>
                 !r.IsDeleted &&
                 r.CanchaId == canchaId &&
                 (r.Estado == "Pendiente" || r.Estado == "Confirmada") &&

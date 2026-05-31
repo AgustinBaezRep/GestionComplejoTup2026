@@ -20,9 +20,9 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<ServicioResponse>> GetAll()
+        public async Task<ActionResult<List<ServicioResponse>>> GetAllAsync()
         {
-            var servicios = _servicioService.GetAll();
+            var servicios = await _servicioService.GetAllAsync();
 
             if (!servicios.Any())
                 return NotFound("No hay servicios registrados.");
@@ -31,32 +31,32 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ServicioResponse> GetById([FromRoute] Guid id)
+        public async Task<ActionResult<ServicioResponse>> GetByIdAsync([FromRoute] Guid id)
         {
-            return Ok(_servicioService.GetById(id));
+            return Ok(await _servicioService.GetByIdAsync(id));
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
-        public ActionResult<ServicioResponse> Create([FromBody] ServicioRequest request)
+        public async Task<ActionResult<ServicioResponse>> CreateAsync([FromBody] ServicioRequest request)
         {
-            var created = _servicioService.Create(request);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await _servicioService.CreateAsync(request);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = created.Id }, created);
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
-        public ActionResult Update([FromBody] ServicioRequest request, [FromRoute] Guid id)
+        public async Task<ActionResult> UpdateAsync([FromBody] ServicioRequest request, [FromRoute] Guid id)
         {
-            _servicioService.Update(request, id);
+            await _servicioService.UpdateAsync(request, id);
             return NoContent();
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            _servicioService.Delete(id);
+            await _servicioService.DeleteAsync(id);
             return NoContent();
         }
     }

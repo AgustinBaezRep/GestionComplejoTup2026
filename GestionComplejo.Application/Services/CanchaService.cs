@@ -17,18 +17,17 @@ namespace GestionComplejo.Application.Services
             _canchaRepository = canchaRepository;
         }
 
-        public List<CanchaResponse> GetAll()
+        public async Task<List<CanchaResponse>> GetAllAsync()
         {
-            return _canchaRepository
-                .GetAll()
+            return (await _canchaRepository.GetAllAsync())
                 .OrderBy(x => x.Capacidad)
                 .Select(x => x.ToCanchaResponse())
                 .ToList();
         }
 
-        public CanchaResponse GetById(Guid id)
+        public async Task<CanchaResponse> GetByIdAsync(Guid id)
         {
-            var cancha = _canchaRepository.GetById(id);
+            var cancha = await _canchaRepository.GetByIdAsync(id);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
@@ -36,26 +35,26 @@ namespace GestionComplejo.Application.Services
             return cancha.ToCanchaResponse();
         }
 
-        public CanchaResponse Create(CanchaRequest cancha)
+        public async Task<CanchaResponse> CreateAsync(CanchaRequest cancha)
         {
             var newCancha = cancha.ToCancha();
-            _canchaRepository.Add(newCancha);
+            await _canchaRepository.AddAsync(newCancha);
             return newCancha.ToCanchaResponse();
         }
 
-        public void Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            var cancha = _canchaRepository.GetById(id);
+            var cancha = await _canchaRepository.GetByIdAsync(id);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
 
-            _canchaRepository.Delete(id);
+            await _canchaRepository.DeleteAsync(id);
         }
 
-        public void Update(CanchaRequest cancha, Guid id)
+        public async Task UpdateAsync(CanchaRequest cancha, Guid id)
         {
-            var canchaToUpdate = _canchaRepository.GetById(id);
+            var canchaToUpdate = await _canchaRepository.GetByIdAsync(id);
 
             if (canchaToUpdate == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{id}'.");
@@ -65,12 +64,12 @@ namespace GestionComplejo.Application.Services
             canchaToUpdate.Capacidad = cancha.Capacidad;
             canchaToUpdate.Precio = cancha.Precio;
 
-            _canchaRepository.Update(canchaToUpdate);
+            await _canchaRepository.UpdateAsync(canchaToUpdate);
         }
 
-        public CanchaResponse AsociarServicios(Guid canchaId, List<Guid> servicioIds)
+        public async Task<CanchaResponse> AsociarServiciosAsync(Guid canchaId, List<Guid> servicioIds)
         {
-            var cancha = _canchaRepository.AsociarServicios(canchaId, servicioIds);
+            var cancha = await _canchaRepository.AsociarServiciosAsync(canchaId, servicioIds);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró una cancha con id '{canchaId}'.");
@@ -78,9 +77,9 @@ namespace GestionComplejo.Application.Services
             return cancha.ToCanchaResponse();
         }
 
-        public CanchaResponse AsociarVestuario(Guid canchaId, Guid vestuarioId)
+        public async Task<CanchaResponse> AsociarVestuarioAsync(Guid canchaId, Guid vestuarioId)
         {
-            var cancha = _canchaRepository.AsociarVestuario(canchaId, vestuarioId);
+            var cancha = await _canchaRepository.AsociarVestuarioAsync(canchaId, vestuarioId);
 
             if (cancha == null)
                 throw new NotFoundException($"No se encontró la cancha o el vestuario especificado.");
