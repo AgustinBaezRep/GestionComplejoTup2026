@@ -16,17 +16,16 @@ namespace GestionComplejo.Application.Services
             _vestuarioRepository = vestuarioRepository;
         }
 
-        public List<VestuarioResponse> GetAll()
+        public async Task<List<VestuarioResponse>> GetAllAsync()
         {
-            return _vestuarioRepository
-                .GetAll()
+            return (await _vestuarioRepository.GetAllAsync())
                 .Select(x => x.ToVestuarioResponse())
                 .ToList();
         }
 
-        public VestuarioResponse GetById(Guid id)
+        public async Task<VestuarioResponse> GetByIdAsync(Guid id)
         {
-            var vestuario = _vestuarioRepository.GetById(id);
+            var vestuario = await _vestuarioRepository.GetByIdAsync(id);
 
             if (vestuario == null)
                 throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
@@ -34,16 +33,16 @@ namespace GestionComplejo.Application.Services
             return vestuario.ToVestuarioResponse();
         }
 
-        public VestuarioResponse Create(VestuarioRequest request)
+        public async Task<VestuarioResponse> CreateAsync(VestuarioRequest request)
         {
             var newVestuario = request.ToVestuario();
-            _vestuarioRepository.Add(newVestuario);
+            await _vestuarioRepository.AddAsync(newVestuario);
             return newVestuario.ToVestuarioResponse();
         }
 
-        public void Update(VestuarioRequest request, Guid id)
+        public async Task UpdateAsync(VestuarioRequest request, Guid id)
         {
-            var vestuario = _vestuarioRepository.GetById(id);
+            var vestuario = await _vestuarioRepository.GetByIdAsync(id);
 
             if (vestuario == null)
                 throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
@@ -53,17 +52,17 @@ namespace GestionComplejo.Application.Services
             vestuario.Capacidad = request.Capacidad;
             vestuario.CanchaId = request.CanchaId;
 
-            _vestuarioRepository.Update(vestuario);
+            await _vestuarioRepository.UpdateAsync(vestuario);
         }
 
-        public void Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            var vestuario = _vestuarioRepository.GetById(id);
+            var vestuario = await _vestuarioRepository.GetByIdAsync(id);
 
             if (vestuario == null)
                 throw new NotFoundException($"No se encontró un vestuario con id '{id}'.");
 
-            _vestuarioRepository.Delete(id);
+            await _vestuarioRepository.DeleteAsync(id);
         }
     }
 }

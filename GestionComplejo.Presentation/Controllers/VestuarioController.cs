@@ -20,9 +20,9 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<VestuarioResponse>> GetAll()
+        public async Task<ActionResult<List<VestuarioResponse>>> GetAllAsync()
         {
-            var vestuarios = _vestuarioService.GetAll();
+            var vestuarios = await _vestuarioService.GetAllAsync();
 
             if (!vestuarios.Any())
                 return NotFound("No hay vestuarios registrados.");
@@ -31,32 +31,32 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VestuarioResponse> GetById([FromRoute] Guid id)
+        public async Task<ActionResult<VestuarioResponse>> GetByIdAsync([FromRoute] Guid id)
         {
-            return Ok(_vestuarioService.GetById(id));
+            return Ok(await _vestuarioService.GetByIdAsync(id));
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
-        public ActionResult<VestuarioResponse> Create([FromBody] VestuarioRequest request)
+        public async Task<ActionResult<VestuarioResponse>> CreateAsync([FromBody] VestuarioRequest request)
         {
-            var created = _vestuarioService.Create(request);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await _vestuarioService.CreateAsync(request);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = created.Id }, created);
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
-        public ActionResult Update([FromBody] VestuarioRequest request, [FromRoute] Guid id)
+        public async Task<ActionResult> UpdateAsync([FromBody] VestuarioRequest request, [FromRoute] Guid id)
         {
-            _vestuarioService.Update(request, id);
+            await _vestuarioService.UpdateAsync(request, id);
             return NoContent();
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            _vestuarioService.Delete(id);
+            await _vestuarioService.DeleteAsync(id);
             return NoContent();
         }
     }

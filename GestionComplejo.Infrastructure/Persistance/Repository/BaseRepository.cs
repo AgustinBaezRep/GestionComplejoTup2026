@@ -1,4 +1,4 @@
-﻿using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Application.Exceptions;
 using GestionComplejo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -16,36 +16,36 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
             _dbSet = context.Set<T>();
         }
 
-        public virtual List<T> GetAll()
+        public virtual async Task<List<T>> GetAllAsync()
         {
-            return _dbSet.Where(x => !x.IsDeleted).ToList();
+            return await _dbSet.Where(x => !x.IsDeleted).ToListAsync();
         }
 
-        public virtual T? GetById(Guid id)
+        public virtual async Task<T?> GetByIdAsync(Guid id)
         {
-            return _dbSet.FirstOrDefault(x => x.Id == id && !x.IsDeleted);
+            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
-        public virtual T Add(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             entity.UpdatedDateTime = DateTime.UtcNow;
 
             _dbSet.Add(entity);
-            SaveChanges();
+            await SaveChangesAsync();
             return entity;
         }
 
-        public virtual void Update(T entity)
+        public virtual async Task UpdateAsync(T entity)
         {
             entity.UpdatedDateTime = DateTime.UtcNow;
 
             _dbSet.Update(entity);
-            SaveChanges();
+            await SaveChangesAsync();
         }
 
-        public virtual void Delete(Guid id)
+        public virtual async Task DeleteAsync(Guid id)
         {
-            var entity = GetById(id);
+            var entity = await GetByIdAsync(id);
             if (entity != null)
             {
                 entity.IsDeleted = true;
@@ -53,15 +53,15 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
                 entity.UpdatedDateTime = DateTime.UtcNow;
 
                 _dbSet.Update(entity);
-                SaveChanges();
+                await SaveChangesAsync();
             }
         }
 
-        protected void SaveChanges()
+        protected async Task SaveChangesAsync()
         {
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {

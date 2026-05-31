@@ -1,4 +1,4 @@
-﻿using GestionComplejo.Application.Abstractions.Infrastructure;
+using GestionComplejo.Application.Abstractions.Infrastructure;
 using GestionComplejo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,34 +10,34 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
         {
         }
 
-        public override List<Cancha> GetAll()
+        public override async Task<List<Cancha>> GetAllAsync()
         {
-            return _context.Canchas
+            return await _context.Canchas
                 .Include(c => c.Servicios)
                 .Include(c => c.Vestuario)
                 .Where(c => !c.IsDeleted)
-                .ToList();
+                .ToListAsync();
         }
 
-        public override Cancha? GetById(Guid id)
+        public override async Task<Cancha?> GetByIdAsync(Guid id)
         {
-            return _context.Canchas
+            return await _context.Canchas
                 .Include(c => c.Servicios)
                 .Include(c => c.Vestuario)
-                .FirstOrDefault(c => c.Id == id && !c.IsDeleted);
+                .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted);
         }
 
-        public Cancha? AsociarServicios(Guid canchaId, List<Guid> servicioIds)
+        public async Task<Cancha?> AsociarServiciosAsync(Guid canchaId, List<Guid> servicioIds)
         {
-            var cancha = _context.Canchas
+            var cancha = await _context.Canchas
                 .Include(c => c.Servicios)
-                .FirstOrDefault(c => c.Id == canchaId && !c.IsDeleted);
+                .FirstOrDefaultAsync(c => c.Id == canchaId && !c.IsDeleted);
 
             if (cancha == null) return null;
 
-            var servicios = _context.Servicios
+            var servicios = await _context.Servicios
                 .Where(s => servicioIds.Contains(s.Id) && !s.IsDeleted)
-                .ToList();
+                .ToListAsync();
 
             foreach (var servicio in servicios)
             {
@@ -45,28 +45,28 @@ namespace GestionComplejo.Infrastructure.Persistance.Repository
                     cancha.Servicios.Add(servicio);
             }
 
-            SaveChanges();
+            await SaveChangesAsync();
             return cancha;
         }
 
-        public Cancha? AsociarVestuario(Guid canchaId, Guid vestuarioId)
+        public async Task<Cancha?> AsociarVestuarioAsync(Guid canchaId, Guid vestuarioId)
         {
-            var cancha = _context.Canchas
-                .FirstOrDefault(c => c.Id == canchaId && !c.IsDeleted);
+            var cancha = await _context.Canchas
+                .FirstOrDefaultAsync(c => c.Id == canchaId && !c.IsDeleted);
 
             if (cancha == null) return null;
 
-            var vestuario = _context.Vestuarios
-                .FirstOrDefault(v => v.Id == vestuarioId && !v.IsDeleted);
+            var vestuario = await _context.Vestuarios
+                .FirstOrDefaultAsync(v => v.Id == vestuarioId && !v.IsDeleted);
 
             if (vestuario == null) return null;
 
             vestuario.CanchaId = canchaId;
             vestuario.UpdatedDateTime = DateTime.UtcNow;
 
-            SaveChanges();
+            await SaveChangesAsync();
 
-            return GetById(canchaId);
+            return await GetByIdAsync(canchaId);
         }
     }
 }

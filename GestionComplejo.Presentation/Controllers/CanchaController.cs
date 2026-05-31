@@ -20,9 +20,9 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<CanchaResponse>> GetAll()
+        public async Task<ActionResult<List<CanchaResponse>>> GetAllAsync()
         {
-            var canchas = _canchaService.GetAll();
+            var canchas = await _canchaService.GetAllAsync();
 
             if (!canchas.Any())
                 return NotFound("No hay canchas registradas.");
@@ -31,47 +31,47 @@ namespace GestionComplejo.Presentation.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CanchaResponse> GetById([FromRoute] Guid id)
+        public async Task<ActionResult<CanchaResponse>> GetByIdAsync([FromRoute] Guid id)
         {
-            return Ok(_canchaService.GetById(id));
+            return Ok(await _canchaService.GetByIdAsync(id));
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost]
-        public ActionResult<CanchaResponse> Create([FromBody] CanchaRequest cancha)
+        public async Task<ActionResult<CanchaResponse>> CreateAsync([FromBody] CanchaRequest cancha)
         {
-            var createdCancha = _canchaService.Create(cancha);
-            return CreatedAtAction(nameof(GetById), new { id = createdCancha.Id }, createdCancha);
+            var createdCancha = await _canchaService.CreateAsync(cancha);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = createdCancha.Id }, createdCancha);
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpDelete("{id}")]
-        public ActionResult Delete([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            _canchaService.Delete(id);
+            await _canchaService.DeleteAsync(id);
             return NoContent();
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPut("{id}")]
-        public ActionResult Update([FromBody] CanchaRequest cancha, [FromRoute] Guid id)
+        public async Task<ActionResult> UpdateAsync([FromBody] CanchaRequest cancha, [FromRoute] Guid id)
         {
-            _canchaService.Update(cancha, id);
+            await _canchaService.UpdateAsync(cancha, id);
             return NoContent();
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/servicios")]
-        public ActionResult<CanchaResponse> AsociarServicios([FromRoute] Guid id, [FromBody] AsociarServiciosRequest request)
+        public async Task<ActionResult<CanchaResponse>> AsociarServiciosAsync([FromRoute] Guid id, [FromBody] AsociarServiciosRequest request)
         {
-            return Ok(_canchaService.AsociarServicios(id, request.ServicioIds));
+            return Ok(await _canchaService.AsociarServiciosAsync(id, request.ServicioIds));
         }
 
         [Authorize(Policy = Policies.SoloAdmin)]
         [HttpPost("{id}/vestuario/{vestuarioId}")]
-        public ActionResult<CanchaResponse> AsociarVestuario([FromRoute] Guid id, [FromRoute] Guid vestuarioId)
+        public async Task<ActionResult<CanchaResponse>> AsociarVestuarioAsync([FromRoute] Guid id, [FromRoute] Guid vestuarioId)
         {
-            return Ok(_canchaService.AsociarVestuario(id, vestuarioId));
+            return Ok(await _canchaService.AsociarVestuarioAsync(id, vestuarioId));
         }
     }
 }

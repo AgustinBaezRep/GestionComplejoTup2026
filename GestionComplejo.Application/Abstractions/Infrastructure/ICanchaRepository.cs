@@ -4,7 +4,7 @@ namespace GestionComplejo.Application.Abstractions.Infrastructure
 {
     public interface ICanchaRepository : IBaseRepository<Cancha>
     {
-        Cancha? AsociarServicios(Guid canchaId, List<Guid> servicioIds);
-        Cancha? AsociarVestuario(Guid canchaId, Guid vestuarioId);
+        Task<Cancha?> AsociarServiciosAsync(Guid canchaId, List<Guid> servicioIds);
+        Task<Cancha?> AsociarVestuarioAsync(Guid canchaId, Guid vestuarioId);
     }
 }
