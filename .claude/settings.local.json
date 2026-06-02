@@ -16,7 +16,10 @@
       "Bash(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
       "Bash(Format-Table -AutoSize)",
-      "PowerShell(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Directory | Where-Object {$_.Name -match \"Test|test\" -or $_.Name -match \"Prueba|prueba\"})"
+      "PowerShell(Get-ChildItem -Path \"E:\\\\TUP\\\\Programacion 4 - 2026 - 1º Cuatrimestre\\\\Repositorio\\\\GestionComplejo\" -Directory | Where-Object {$_.Name -match \"Test|test\" -or $_.Name -match \"Prueba|prueba\"})",
+      "Bash(bash *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   },
   "prefersReducedMotion": false
