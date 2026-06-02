@@ -1,0 +1,94 @@
+name: CI/CD — Build & Deploy to Azure
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1: Build, test y publicar el artifact
+  # ─────────────────────────────────────────
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencias
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Publish
+        run: dotnet publish GestionComplejo.Presentation --no-build --configuration Release -o ./publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: ./publish
+
+  # ─────────────────────────────────────────
+  # JOB 2: Migraciones EF + Deploy a Azure
+  # ─────────────────────────────────────────
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app
+          path: ./publish
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Login a Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Restore dependencias (para dotnet-ef)
+        run: dotnet restore
+
+      - name: Instalar dotnet-ef tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Correr migraciones EF Core
+        env:
+          ConnectionStrings__GestionComplejoConnectionString: ${{ secrets.CONNECTION_STRING }}
+        run: |
+          dotnet ef database update \
+            --project GestionComplejo.Infrastructure \
+            --startup-project GestionComplejo.Presentation \
+            --no-build
+
+      - name: Deploy a Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: ./publish
+
+      - name: Logout de Azure
+        if: always()
+        run: az logout
